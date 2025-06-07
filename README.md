@@ -15,19 +15,37 @@
     <h1>Dompet ARAS v2</h1>
   </header>
 
-  <main>
-    <section id="login-section">
-      <h2>Login Sederhana</h2>
-      <input type="text" id="username" placeholder="Masukkan nama pengguna" />
-      <button id="login-btn">Login</button>
-    </section>
+<main>
+  <section id="login-section">
+    <h2>Login Sederhana</h2>
+    <input type="text" id="username" placeholder="Masukkan nama pengguna" />
+    <button id="login-btn">Login</button>
+  </section>
 
-    <section id="wallet-section" class="hidden">
-      <h2>Saldo Anda: <span id="balance">0</span> ARAS</h2>
-      <input type="number" id="topup-amount" placeholder="Jumlah Top-Up" min="1" />
-      <button id="topup-btn">Top-Up</button>
-      <button id="logout-btn">Logout</button>
-    </section>
+  <section id="wallet-section" class="hidden">
+    <h2>Saldo Anda: <span id="balance">0</span> ARAS</h2>
+    <input type="number" id="topup-amount" placeholder="Jumlah Top-Up" min="1" />
+    <button id="topup-btn">Top-Up</button>
+    <button id="logout-btn">Logout</button>
+
+    <h3>🔧 Menu Layanan</h3>
+    <div class="services">
+      <button onclick="openPulsa()">📱 Beli Pulsa</button>
+      <button onclick="openListrik()">💡 Bayar Listrik</button>
+      <button onclick="openAir()">🚿 Iuran Air</button>
+      <button onclick="openHarga()">♻️ Cek Harga Sampah</button>
+    </div>
+  </section>
+
+  <!-- Modal Layanan -->
+  <div id="modal" class="hidden">
+    <div class="modal-box">
+      <h3 id="modal-title">Judul</h3>
+      <div id="modal-content"></div>
+      <button onclick="closeModal()">Tutup</button>
+    </div>
+  </div>
+</main>
   </main>
 
   <script src="script.js"></script>
@@ -91,6 +109,35 @@ button:hover {
 
 .hidden {
   display: none;
+}
+.services {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.modal-box {
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #aaa;
+  width: 90%;
+  max-width: 400px;
+  margin: 2rem auto;
+}
+
+#modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 // Konfigurasi Firebase
 const firebaseConfig = {
@@ -163,4 +210,82 @@ function updateBalanceDisplay() {
   if (!currentUser) return;
   const bal = getBalance(currentUser);
   balanceSpan.textContent = bal;
+}
+function openModal(title, htmlContent) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-content').innerHTML = htmlContent;
+  document.getElementById('modal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.add('hidden');
+}
+
+// Fungsi layanan simulasi
+function openPulsa() {
+  openModal("📱 Beli Pulsa", `
+    <input type="text" placeholder="Nomor HP" id="noHp"><br>
+    <input type="number" placeholder="Nominal (e.g. 10000)" id="pulsaNom"><br>
+    <button onclick="bayarPulsa()">Beli</button>
+  `);
+}
+
+function bayarPulsa() {
+  const no = document.getElementById('noHp').value;
+  const nom = parseInt(document.getElementById('pulsaNom').value);
+  if (!no || isNaN(nom)) return alert("Isi semua data!");
+  if (getBalance(currentUser) < nom) return alert("Saldo tidak cukup!");
+  saveBalance(currentUser, getBalance(currentUser) - nom);
+  updateBalanceDisplay();
+  alert(`Pulsa ${nom} untuk ${no} berhasil dibeli!`);
+  closeModal();
+}
+
+function openListrik() {
+  openModal("💡 Bayar Listrik", `
+    <input type="text" placeholder="ID Pelanggan" id="idListrik"><br>
+    <input type="number" placeholder="Jumlah Tagihan" id="listrikNom"><br>
+    <button onclick="bayarListrik()">Bayar</button>
+  `);
+}
+
+function bayarListrik() {
+  const id = document.getElementById('idListrik').value;
+  const nom = parseInt(document.getElementById('listrikNom').value);
+  if (!id || isNaN(nom)) return alert("Lengkapi data!");
+  if (getBalance(currentUser) < nom) return alert("Saldo tidak cukup!");
+  saveBalance(currentUser, getBalance(currentUser) - nom);
+  updateBalanceDisplay();
+  alert(`Tagihan listrik ID ${id} berhasil dibayar!`);
+  closeModal();
+}
+
+function openAir() {
+  openModal("🚿 Iuran Air", `
+    <input type="text" placeholder="Nama / ID Pelanggan" id="idAir"><br>
+    <input type="number" placeholder="Nominal Iuran" id="airNom"><br>
+    <button onclick="bayarAir()">Bayar</button>
+  `);
+}
+
+function bayarAir() {
+  const id = document.getElementById('idAir').value;
+  const nom = parseInt(document.getElementById('airNom').value);
+  if (!id || isNaN(nom)) return alert("Lengkapi data!");
+  if (getBalance(currentUser) < nom) return alert("Saldo tidak cukup!");
+  saveBalance(currentUser, getBalance(currentUser) - nom);
+  updateBalanceDisplay();
+  alert(`Iuran air untuk ${id} berhasil dibayar!`);
+  closeModal();
+}
+
+function openHarga() {
+  openModal("♻️ Harga Sampah Hari Ini", `
+    <ul style="text-align:left;">
+      <li>Plastik: Rp 2.000/kg</li>
+      <li>Kertas: Rp 1.500/kg</li>
+      <li>Kaleng: Rp 4.000/kg</li>
+      <li>Botol Kaca: Rp 1.000/kg</li>
+    </ul>
+  `);
 }
