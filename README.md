@@ -1,53 +1,43 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dompet ARAS v2</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="Logo Dompet ARAS" class="logo" />
     <h1>Dompet ARAS v2</h1>
   </header>
+  <main>
+    <section class="login">
+      <h2>Masuk</h2>
+      <input type="text" id="username" placeholder="Nama Pengguna">
+      <button type="button" onclick="login()">Masuk</button>
+    </section>
 
-<main>
-  <section id="login-section">
-    <h2>Login Sederhana</h2>
-    <input type="text" id="username" placeholder="Masukkan nama pengguna" />
-    <button id="login-btn">Login</button>
-  </section>
+    <section class="dashboard" style="display:none">
+      <h2>Halo, <span id="userDisplay"></span>!</h2>
+      <p>Saldo: Rp <span id="balance">0</span></p>
 
-  <section id="wallet-section" class="hidden">
-    <h2>Saldo Anda: <span id="balance">0</span> ARAS</h2>
-    <input type="number" id="topup-amount" placeholder="Jumlah Top-Up" min="1" />
-    <button id="topup-btn">Top-Up</button>
-    <button id="logout-btn">Logout</button>
+      <div class="actions">
+        <button type="button" onclick="showTopUpModal()">💰 Top-Up</button>
+        <button type="button" onclick="showTransferModal()">💸 Transfer</button>
+        <button type="button" onclick="showPulsaModal()">📱 Pulsa</button>
+        <button type="button" onclick="showListrikModal()">💡 Listrik</button>
+        <button type="button" onclick="showAirModal()">🚿 Air</button>
+        <button type="button" onclick="showHargaModal()">♻️ Cek Harga</button>
+      </div>
+    </section>
 
-    <h3>🔧 Menu Layanan</h3>
-    <div class="services">
-      <button onclick="openPulsa()">📱 Beli Pulsa</button>
-      <button onclick="openListrik()">💡 Bayar Listrik</button>
-      <button onclick="openAir()">🚿 Iuran Air</button>
-      <button onclick="openHarga()">♻️ Cek Harga Sampah</button>
+    <div class="modal" id="modal" style="display:none">
+      <div class="modal-content">
+        <button type="button" class="close" onclick="closeModal()">&times;</button>
+        <div id="modal-body"></div>
+      </div>
     </div>
-  </section>
-
-  <!-- Modal Layanan -->
-  <div id="modal" class="hidden">
-    <div class="modal-box">
-      <h3 id="modal-title">Judul</h3>
-      <div id="modal-content"></div>
-      <button onclick="closeModal()">Tutup</button>
-    </div>
-  </div>
-</main>
   </main>
-
   <script src="script.js"></script>
 </body>
 </html>
